@@ -29,7 +29,7 @@ That means the package is opinionated about:
 
 - keeps a canonical skill source tree under `skills-src/`
 - installs managed skill directories into built-in targets such as `.agents/skills/` and `.claude/skills/`
-- supports canonical names, UX aliases, and optional legacy `cmd-*` compatibility
+- supports canonical names and UX aliases
 - supports guided drafting for repository documents outside the core SDD artifact chain
 - exposes lifecycle commands for install, update, doctoring, status, next-step resolution, and workflow verification
 - injects project-local context and rules from `flow.config.yaml` into installed skills
@@ -95,20 +95,155 @@ npx flow-skills verify --project /path/to/project --feature my-feature
 - complements `flow-review`; it does not replace review
 - returns non-zero when verification fails
 
+## Example: Shopping Cart Feature
+
+### Quickstart
+
+Bootstrap the package in your repository:
+
+```bash
+npm i -D @padroes-dev-ia/flow-skills
+npx flow-skills init --project . --tools codex,claude --profile strict
+npx flow-skills status --project .
+npx flow-skills next --project .
+```
+
+Then, in your LLM client, start planning a shopping cart feature for a product catalog site:
+
+```text
+Use `flow-plan` for a feature named `shopping-cart`.
+
+Context:
+- this is a product catalog website
+- product listing and product detail pages already exist
+- users can browse as guests
+- the cart must support add item, remove item, change quantity, subtotal, and empty state
+- checkout is out of scope for this feature
+
+Generate the PRD, TechSpec, task breakdown, and a preliminary validation draft.
+```
+
+Expected planning artifacts:
+
+- `tasks/shopping-cart/_prd.md`
+- `tasks/shopping-cart/_techspec.md`
+- `tasks/shopping-cart/_tasks.md`
+- `tasks/shopping-cart/task_*.md`
+
+### End-to-end walkthrough
+
+1. Initialize the workflow in the repository.
+
+```bash
+npx flow-skills init --project . --tools codex,claude --profile strict
+```
+
+2. Plan the feature in the LLM client.
+
+```text
+Use `flow-plan` for a feature named `shopping-cart`.
+
+Business goal:
+- let a user build a cart while browsing a product catalog
+
+Scope:
+- add to cart from product list and product detail pages
+- remove item from cart
+- change item quantity
+- show subtotal and total item count
+- show empty-cart state
+- block quantities above available stock
+
+Out of scope:
+- checkout
+- payment
+- coupon system
+- account-specific saved carts
+
+Produce the planning artifacts end to end.
+```
+
+Optional checkpoint after planning:
+
+```bash
+npx flow-skills status --project . --feature shopping-cart
+npx flow-skills verify --project . --feature shopping-cart
+```
+
+3. Execute the planned work in the LLM client.
+
+```text
+Use `flow-run` for feature `shopping-cart`.
+
+Implement the planned tasks end to end, keep task tracking updated, and stop when the feature is ready for structured review.
+```
+
+If you want to inspect progress from the terminal while work is running:
+
+```bash
+npx flow-skills status --project . --feature shopping-cart
+npx flow-skills next --project . --feature shopping-cart
+```
+
+4. Review the implementation in the LLM client.
+
+```text
+Use `flow-review` for feature `shopping-cart`.
+
+Review the implementation against the PRD, TechSpec, task files, and current code. Create a review round with concrete issues if problems are found.
+```
+
+If the review opens issues:
+
+```text
+Use `flow-fix-review` for feature `shopping-cart`.
+
+Resolve the latest review issues, update the review files, and verify the result before closure.
+```
+
+5. Generate the final validation package in the LLM client.
+
+```text
+Use `flow-validation-plan` for feature `shopping-cart`.
+
+Generate the final validation package with scenarios for:
+- add to cart from listing page
+- add to cart from product detail page
+- remove item
+- change quantity
+- subtotal update
+- empty-cart state
+- stock-limit rejection
+```
+
+6. Run a final audit from the terminal.
+
+```bash
+npx flow-skills status --project . --feature shopping-cart
+npx flow-skills verify --project . --feature shopping-cart
+```
+
+Typical end state for this example:
+
+- planning artifacts exist under `tasks/shopping-cart/`
+- implementation tasks are completed
+- at least one review round exists
+- review issues are resolved or explicitly tracked
+- final validation artifacts are ready for manual or hybrid QA
+
 ## Profiles
 
 `strict`
 
 - full governed workflow
 - installs exploration, generic docs, planning, execution, review, verification, validation, and memory skills
-- enables UX aliases and legacy `cmd-*` compatibility
+- enables UX aliases
 
 `quick`
 
 - lean workflow for faster adoption
 - installs exploration, planning, execution, review, and verification skills
 - enables UX aliases
-- disables legacy `cmd-*` compatibility by default
 
 `workspace`
 
@@ -151,10 +286,6 @@ UX aliases include:
 - `fix-review`
 - `verify`
 
-Legacy aliases remain optional:
-
-- `cmd-*` names are installed only when `compat.cmd_prefix` is enabled
-
 ## Config
 
 `flow.config.yaml`
@@ -178,8 +309,6 @@ skills:
 delivery: skills
 aliases: true
 defaultLanguage: pt-BR
-compat:
-  cmd_prefix: false
 context: |
   API monolith with strict change control and feature-level reviews.
 rules:
@@ -249,14 +378,6 @@ Use `flow-doc-workshop` when the repo needs a structured document outside the sp
 - standalone `ADR`
 
 Do not use it as a replacement for `flow-prd`, `flow-techspec`, `flow-tasks`, or `flow-validation-plan`.
-
-## Migration
-
-Canonical naming is `flow-*`.
-
-- use `flow-*` in docs, examples, onboarding, and new automation
-- enable `compat.cmd_prefix` only for consumers that still depend on `cmd-*`
-- see [docs/flow-migration-guide.md](docs/flow-migration-guide.md) for the rename map and compatibility policy
 
 ## Guides
 
