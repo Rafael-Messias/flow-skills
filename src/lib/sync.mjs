@@ -10,26 +10,20 @@ import {
 } from "./manifest.mjs";
 
 export async function syncProjectSkills({ packageRoot, projectRoot, config }) {
-  const normalizedConfig = {
-    ...DEFAULT_PROJECT_CONFIG,
-    ...config,
-    compat: {
-      ...DEFAULT_PROJECT_CONFIG.compat,
-      ...(config.compat ?? {})
-    }
-  };
+  const normalizedConfig = { ...DEFAULT_PROJECT_CONFIG, ...config };
   const selectedSkills = new Set(normalizedConfig.skills);
   const toolDestinations = resolveToolDestinations(normalizedConfig.toolTargets);
 
   for (const [tool, destinationParts] of Object.entries(toolDestinations)) {
     const destinationRoot = path.join(projectRoot, ...destinationParts);
-    await ensureDir(destinationRoot);
     await removeManagedSkillDirectories(destinationRoot);
 
     if (!normalizedConfig.tools.includes(tool)) {
+      await pruneEmptyToolPath(projectRoot, destinationParts);
       continue;
     }
 
+    await ensureDir(destinationRoot);
     const transforms = buildTransforms(normalizedConfig);
 
     for (const skill of SKILLS) {
@@ -46,10 +40,6 @@ export async function syncProjectSkills({ packageRoot, projectRoot, config }) {
           await copyDir(sourceDir, path.join(destinationRoot, alias), transforms.alias(skill, alias));
         }
       }
-
-      if (normalizedConfig.compat.cmd_prefix && skill.legacy) {
-        await copyDir(sourceDir, path.join(destinationRoot, skill.legacy), transforms.legacy(skill));
-      }
     }
   }
 
@@ -58,14 +48,7 @@ export async function syncProjectSkills({ packageRoot, projectRoot, config }) {
 
 export async function getInstalledSkillStatus({ projectRoot, config }) {
   const tools = [];
-  const normalizedConfig = {
-    ...DEFAULT_PROJECT_CONFIG,
-    ...config,
-    compat: {
-      ...DEFAULT_PROJECT_CONFIG.compat,
-      ...(config.compat ?? {})
-    }
-  };
+  const normalizedConfig = { ...DEFAULT_PROJECT_CONFIG, ...config };
   const toolDestinations = resolveToolDestinations(normalizedConfig.toolTargets);
 
   for (const tool of normalizedConfig.tools) {
@@ -96,13 +79,6 @@ export async function getInstalledSkillStatus({ projectRoot, config }) {
           });
         }
       }
-
-      if (normalizedConfig.compat.cmd_prefix && skill.legacy) {
-        skills.push({
-          name: skill.legacy,
-          present: await pathExists(path.join(destinationRoot, skill.legacy))
-        });
-      }
     }
 
     tools.push({
@@ -126,9 +102,6 @@ function buildTransforms(config) {
     },
     alias(skill, alias) {
       return (contents, sourcePath) => transformSkillContents(contents, sourcePath, alias, config, skill.canonical);
-    },
-    legacy(skill) {
-      return (contents, sourcePath) => transformSkillContents(contents, sourcePath, skill.legacy, config, skill.canonical);
     }
   };
 }
@@ -155,7 +128,6 @@ function injectProjectOverlay(contents, config) {
   sections.push("Estas instrucoes sao geradas a partir de `flow.config.yaml` pelo pacote `flow-sdd`.");
   sections.push("");
   sections.push(`- Perfil ativo: \`${config.profile}\``);
-  sections.push(`- Compatibilidade legada \`cmd-*\`: ${config.compat.cmd_prefix ? "enabled" : "disabled"}`);
   sections.push(`- Aliases de UX: ${config.aliases ? "enabled" : "disabled"}`);
   sections.push(`- Idioma padrao do projeto: \`${config.defaultLanguage}\``);
 
@@ -183,9 +155,6 @@ async function removeManagedSkillDirectories(destinationRoot) {
     for (const alias of skill.aliases) {
       await removeDirIfExists(path.join(destinationRoot, alias));
     }
-    if (skill.legacy) {
-      await removeDirIfExists(path.join(destinationRoot, skill.legacy));
-    }
   }
 }
 
@@ -201,9 +170,6 @@ async function readInstalledNames(destinationRoot) {
     managedNames.add(skill.canonical);
     for (const alias of skill.aliases) {
       managedNames.add(alias);
-    }
-    if (skill.legacy) {
-      managedNames.add(skill.legacy);
     }
   }
 
@@ -228,11 +194,23 @@ function buildExpectedNamesForTool(config) {
         names.add(alias);
       }
     }
-
-    if (config.compat.cmd_prefix && skill.legacy) {
-      names.add(skill.legacy);
-    }
   }
 
   return names;
+}
+
+async function pruneEmptyToolPath(projectRoot, destinationParts) {
+  for (let length = destinationParts.length; length > 0; length -= 1) {
+    const currentPath = path.join(projectRoot, ...destinationParts.slice(0, length));
+    if (!(await pathExists(currentPath))) {
+      continue;
+    }
+
+    const entries = await fs.readdir(currentPath);
+    if (entries.length > 0) {
+      break;
+    }
+
+    await fs.rmdir(currentPath);
+  }
 }

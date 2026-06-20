@@ -13,8 +13,8 @@ const HELP_TEXT = `flow-sdd
 
 Usage:
   flow-sdd list [--json]
-  flow-sdd init [--project <path>] [--tools <csv>] [--profile <name>] [--compat-cmd-prefix|--no-compat-cmd-prefix]
-  flow-sdd update [--project <path>] [--tools <csv>] [--profile <name>] [--compat-cmd-prefix|--no-compat-cmd-prefix]
+  flow-sdd init [--project <path>] [--tools <csv>] [--profile <name>]
+  flow-sdd update [--project <path>] [--tools <csv>] [--profile <name>]
   flow-sdd doctor [--project <path>] [--strict]
   flow-sdd status [--project <path>] [--feature <name-or-path>] [--json]
   flow-sdd next [--project <path>] [--feature <name-or-path>] [--json]
@@ -66,13 +66,8 @@ function parseArgs(argv) {
       continue;
     }
 
-    if (token === "--json" || token === "--strict" || token === "--compat-cmd-prefix") {
+    if (token === "--json" || token === "--strict") {
       options[toOptionKey(token)] = true;
-      continue;
-    }
-
-    if (token === "--no-compat-cmd-prefix") {
-      options.compatCmdPrefix = false;
       continue;
     }
 

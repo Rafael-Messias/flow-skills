@@ -32,8 +32,12 @@ export function normalizeProjectConfig(rawConfig) {
   const profilePreset = getProfilePreset(profile);
   const toolTargets = normalizeToolTargets(rawConfig.toolTargets ?? DEFAULT_PROJECT_CONFIG.toolTargets);
   const availableToolDestinations = resolveToolDestinations(toolTargets);
-  const tools = Array.isArray(rawConfig.tools) && rawConfig.tools.length
-    ? rawConfig.tools.filter((tool) => tool in availableToolDestinations)
+  const hasExplicitTools = Array.isArray(rawConfig.tools);
+  const requestedTools = hasExplicitTools
+    ? rawConfig.tools.map((tool) => String(tool).trim()).filter(Boolean)
+    : null;
+  const tools = hasExplicitTools
+    ? requestedTools.filter((tool) => tool in availableToolDestinations)
     : [...DEFAULT_PROJECT_CONFIG.tools];
   const skills = Array.isArray(rawConfig.skills) && rawConfig.skills.length
     ? rawConfig.skills.filter((skill) => SKILL_INDEX.has(skill))
@@ -47,9 +51,6 @@ export function normalizeProjectConfig(rawConfig) {
     delivery: rawConfig.delivery ?? DEFAULT_PROJECT_CONFIG.delivery,
     aliases: rawConfig.aliases ?? profilePreset.aliases ?? DEFAULT_PROJECT_CONFIG.aliases,
     defaultLanguage: normalizeLanguage(rawConfig.defaultLanguage ?? DEFAULT_PROJECT_CONFIG.defaultLanguage),
-    compat: {
-      cmd_prefix: rawConfig.compat?.cmd_prefix ?? profilePreset.compat?.cmd_prefix ?? DEFAULT_PROJECT_CONFIG.compat.cmd_prefix
-    },
     rules: normalizeRules(rawConfig.rules ?? DEFAULT_PROJECT_CONFIG.rules),
     context: normalizeContext(rawConfig.context ?? DEFAULT_PROJECT_CONFIG.context)
   };
@@ -58,9 +59,25 @@ export function normalizeProjectConfig(rawConfig) {
 export async function writeProjectConfig(projectRoot, rawConfig) {
   const filePath = path.join(projectRoot, CONFIG_FILE);
   const config = normalizeProjectConfig(rawConfig);
+  validateProjectConfig(config, rawConfig);
   const contents = YAML.stringify(config);
   await fs.writeFile(filePath, contents, "utf8");
   return { filePath, config };
+}
+
+export function validateProjectConfig(config, rawConfig = {}) {
+  if (!Array.isArray(rawConfig.tools)) {
+    return;
+  }
+
+  const requestedTools = rawConfig.tools.map((tool) => String(tool).trim()).filter(Boolean);
+  if (requestedTools.length === 0) {
+    throw new Error("At least one tool must be selected. Use built-in tools like `codex` or `claude`, or configure `toolTargets` for custom tools.");
+  }
+
+  if (config.tools.length === 0) {
+    throw new Error(`No valid tools were selected from: ${requestedTools.join(", ")}.`);
+  }
 }
 
 function normalizeToolTargets(rawToolTargets) {

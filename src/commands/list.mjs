@@ -20,9 +20,6 @@ export async function runList({ options, context }) {
   context.io.stdout.write("Canonical skills\n\n");
   for (const skill of SKILLS) {
     const parts = [];
-    if (skill.legacy) {
-      parts.push(`legacy: ${skill.legacy}`);
-    }
     if (skill.aliases.length) {
       parts.push(`aliases: ${skill.aliases.join(", ")}`);
     }

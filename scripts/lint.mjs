@@ -5,20 +5,13 @@ import { PROFILE_PRESETS, SKILLS, SKILL_INDEX } from "../src/lib/manifest.mjs";
 
 const packageRoot = path.resolve(import.meta.dirname, "..");
 const seenCanonical = new Set();
-const seenLegacy = new Set();
 
 for (const skill of SKILLS) {
   if (seenCanonical.has(skill.canonical)) {
     throw new Error(`Duplicate canonical skill: ${skill.canonical}`);
   }
-  if (skill.legacy && seenLegacy.has(skill.legacy)) {
-    throw new Error(`Duplicate legacy skill: ${skill.legacy}`);
-  }
 
   seenCanonical.add(skill.canonical);
-  if (skill.legacy) {
-    seenLegacy.add(skill.legacy);
-  }
 
   const sourceDir = path.join(packageRoot, "skills-src", skill.canonical);
   await fs.access(sourceDir);

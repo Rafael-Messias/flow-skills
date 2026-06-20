@@ -11,11 +11,7 @@ export async function runUpdate({ options, context }) {
   const config = {
     ...(existingConfig ?? {}),
     ...(options.profile ? { profile: options.profile } : {}),
-    ...(options.tools ? { tools: options.tools.split(",").map((tool) => tool.trim()).filter(Boolean) } : {}),
-    compat: {
-      ...(existingConfig?.compat ?? {}),
-      ...(options.compatCmdPrefix !== undefined ? { cmd_prefix: options.compatCmdPrefix } : {})
-    }
+    ...(options.tools ? { tools: options.tools.split(",").map((tool) => tool.trim()).filter(Boolean) } : {})
   };
 
   const written = await writeProjectConfig(projectRoot, config);

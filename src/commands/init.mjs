@@ -11,11 +11,7 @@ export async function runInit({ options, context }) {
   const config = {
     ...(existingConfig ?? {}),
     ...(options.profile ? { profile: options.profile } : {}),
-    ...(options.tools ? { tools: options.tools.split(",").map((tool) => tool.trim()).filter(Boolean) } : {}),
-    compat: {
-      ...(existingConfig?.compat ?? {}),
-      ...(options.compatCmdPrefix !== undefined ? { cmd_prefix: options.compatCmdPrefix } : {})
-    }
+    ...(options.tools ? { tools: options.tools.split(",").map((tool) => tool.trim()).filter(Boolean) } : {})
   };
 
   const written = await writeProjectConfig(projectRoot, config);
@@ -28,6 +24,5 @@ export async function runInit({ options, context }) {
   context.io.stdout.write(`Initialized flow-sdd in ${projectRoot}\n`);
   context.io.stdout.write(`Profile: ${result.config.profile}\n`);
   context.io.stdout.write(`Tools: ${result.config.tools.join(", ")}\n`);
-  context.io.stdout.write(`Legacy compatibility: ${result.config.compat.cmd_prefix ? "enabled" : "disabled"}\n`);
   return 0;
 }

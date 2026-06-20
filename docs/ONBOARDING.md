@@ -22,7 +22,7 @@ Recommended habit:
 
 ## Strict path
 
-Use this when the repo needs the whole governed workflow, including validation planning, memory, and temporary legacy compatibility.
+Use this when the repo needs the whole governed workflow, including validation planning and memory.
 
 ```bash
 npx flow-sdd init --project . --tools codex,claude --profile strict

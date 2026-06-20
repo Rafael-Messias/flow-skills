@@ -16,7 +16,13 @@ export async function runDoctor({ options, context }) {
   context.io.stdout.write(`Project: ${projectRoot}\n`);
   context.io.stdout.write(`Config file: ${loadedConfig ? "present" : "missing (using defaults)"}\n`);
   context.io.stdout.write(`Profile: ${config.profile}\n`);
+  context.io.stdout.write(`Tools: ${config.tools.length ? config.tools.join(", ") : "none selected"}\n`);
   context.io.stdout.write(`Skills selected: ${config.skills.join(", ")}\n`);
+
+  if (config.tools.length === 0) {
+    context.io.stderr.write("\nDoctor found no selected tool targets in flow.config.yaml.\n");
+    return options.strict ? 1 : 0;
+  }
 
   for (const toolStatus of status.tools) {
     context.io.stdout.write(`\n[${toolStatus.tool}] ${toolStatus.destination}\n`);

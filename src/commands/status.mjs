@@ -17,8 +17,7 @@ export async function runStatus({ options, context }) {
     config: {
       present: Boolean(loadedConfig),
       profile: config.profile,
-      tools: config.tools,
-      compatCmdPrefix: config.compat.cmd_prefix
+      tools: config.tools
     },
     ...status
   };
@@ -36,7 +35,7 @@ function renderHumanStatus(payload, stdout) {
   stdout.write(`Project: ${payload.projectRoot}\n`);
   stdout.write(`Config file: ${payload.config.present ? "present" : "missing (using defaults)"}\n`);
   stdout.write(`Profile: ${payload.config.profile}\n`);
-  stdout.write(`Tools: ${payload.config.tools.join(", ")}\n`);
+  stdout.write(`Tools: ${payload.config.tools.length ? payload.config.tools.join(", ") : "none selected"}\n`);
 
   if (payload.mode === "empty") {
     stdout.write(`\nWorkflow roots: ${formatWorkflowRoots(payload.workflowRoots)}\n`);

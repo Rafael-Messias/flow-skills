@@ -15,6 +15,7 @@ await testQuickProfileOverlay();
 await testWorkspaceProfile();
 await testCustomToolTargets();
 await testWorkflowIntrospectionAndVerification();
+await testInvalidToolSelection();
 
 console.log("smoke tests passed");
 
@@ -44,13 +45,13 @@ async function testStrictProfileLifecycle() {
   assert.ok(config.skills.includes("flow-explore"));
   assert.ok(config.skills.includes("flow-doc-workshop"));
   assert.equal(config.defaultLanguage, "pt-BR");
-  assert.equal(config.compat.cmd_prefix, true);
+  assert.equal(config.compat, undefined);
 
   await fs.access(path.join(root, ".agents", "skills", "flow-doc-workshop"));
   await fs.access(path.join(root, ".agents", "skills", "docs"));
   await fs.access(path.join(root, ".agents", "skills", "flow-plan"));
   await fs.access(path.join(root, ".agents", "skills", "plan"));
-  await fs.access(path.join(root, ".agents", "skills", "cmd-plan-feature"));
+  assert.equal(await countSkillDirectoriesWithPrefix(root, ".agents", "skills", "cmd-"), 0);
   await fs.access(path.join(root, ".claude", "skills", "flow-plan"));
 
   const skillBefore = await fs.readFile(path.join(root, ".agents", "skills", "flow-plan", "SKILL.md"), "utf8");
@@ -96,7 +97,7 @@ async function testQuickProfileOverlay() {
 
   config = await readYaml(path.join(root, "flow.config.yaml"));
   assert.equal(config.profile, "quick");
-  assert.equal(config.compat.cmd_prefix, false);
+  assert.equal(config.compat, undefined);
   assert.equal(config.defaultLanguage, "en-US");
   assert.ok(config.skills.includes("flow-explore"));
   assert.ok(!config.skills.includes("flow-doc-workshop"));
@@ -107,8 +108,9 @@ async function testQuickProfileOverlay() {
   await fs.access(path.join(root, ".agents", "skills", "propose"));
   await fs.access(path.join(root, ".agents", "skills", "design"));
   await assert.rejects(fs.access(path.join(root, ".agents", "skills", "flow-doc-workshop")));
-  await assert.rejects(fs.access(path.join(root, ".agents", "skills", "cmd-plan-feature")));
+  assert.equal(await countSkillDirectoriesWithPrefix(root, ".agents", "skills", "cmd-"), 0);
   await assert.rejects(fs.access(path.join(root, ".agents", "skills", "flow-validation-plan")));
+  await assert.rejects(fs.access(path.join(root, ".claude")));
 
   const installedSkill = await fs.readFile(path.join(root, ".agents", "skills", "flow-plan", "SKILL.md"), "utf8");
   assert.match(installedSkill, /Flow Package Overlay/);
@@ -132,7 +134,7 @@ async function testWorkspaceProfile() {
 
   const config = await readYaml(path.join(root, "flow.config.yaml"));
   assert.equal(config.profile, "workspace");
-  assert.equal(config.compat.cmd_prefix, false);
+  assert.equal(config.compat, undefined);
   assert.equal(config.defaultLanguage, "pt-BR");
   assert.ok(config.skills.includes("flow-doc-workshop"));
   assert.ok(config.skills.includes("flow-plan"));
@@ -144,6 +146,7 @@ async function testWorkspaceProfile() {
   await fs.access(path.join(root, ".agents", "skills", "flow-plan"));
   await fs.access(path.join(root, ".agents", "skills", "flow-verify"));
   await assert.rejects(fs.access(path.join(root, ".agents", "skills", "flow-run")));
+  await assert.rejects(fs.access(path.join(root, ".claude")));
 }
 
 async function testCustomToolTargets() {
@@ -170,6 +173,7 @@ async function testCustomToolTargets() {
   await fs.access(path.join(root, ".gemini", "skills", "flow-plan"));
   await fs.access(path.join(root, ".gemini", "skills", "plan"));
   await fs.access(path.join(root, ".gemini", "skills", "flow-explore"));
+  await assert.rejects(fs.access(path.join(root, ".claude")));
 
   stdout.reset();
   stderr.reset();
@@ -424,6 +428,16 @@ provider_ref:
   );
 }
 
+async function testInvalidToolSelection() {
+  const root = await makeTempProjectRoot();
+  const { stdout, stderr } = createIo();
+
+  await assert.rejects(
+    runCli(["init", "--project", root, "--tools", "unknown-tool", "--profile", "strict"], root, io(stdout, stderr)),
+    /No valid tools were selected/
+  );
+}
+
 async function makeTempProjectRoot() {
   return fs.mkdtemp(path.join(os.tmpdir(), "flow-sdd-"));
 }
@@ -461,4 +475,11 @@ function createBuffer() {
 async function readYaml(filePath) {
   const contents = await fs.readFile(filePath, "utf8");
   return YAML.parse(contents);
+}
+
+async function countSkillDirectoriesWithPrefix(root, ...parts) {
+  const prefix = parts.pop();
+  const skillsPath = path.join(root, ...parts);
+  const entries = await fs.readdir(skillsPath, { withFileTypes: true });
+  return entries.filter((entry) => entry.isDirectory() && entry.name.startsWith(prefix)).length;
 }

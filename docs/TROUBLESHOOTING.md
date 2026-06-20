@@ -15,24 +15,9 @@ If the directory is still missing:
 
 ## `doctor` reports unexpected managed directories
 
-That usually means the project changed profile, alias mode, or legacy compatibility mode.
+That usually means the project changed profile, alias mode, or selected tool set.
 
 Run:
-
-```bash
-npx flow-sdd update --project .
-```
-
-## The repo still needs `cmd-*`
-
-Enable compatibility:
-
-```yaml
-compat:
-  cmd_prefix: true
-```
-
-Then run:
 
 ```bash
 npx flow-sdd update --project .
@@ -109,7 +94,7 @@ Use `quick` when:
 
 Use `strict` when:
 
-- the repo needs validation planning, memory, and legacy support
+- the repo needs validation planning and memory
 
 Use `workspace` when:
 

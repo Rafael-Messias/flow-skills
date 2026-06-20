@@ -1,28 +1,25 @@
 export const SKILLS = [
-  { canonical: "flow-explore", legacy: null, aliases: ["explore"] },
-  { canonical: "flow-doc-workshop", legacy: null, aliases: ["docs"] },
-  { canonical: "flow-plan", legacy: "cmd-plan-feature", aliases: ["plan"] },
-  { canonical: "flow-prd", legacy: "cmd-create-prd", aliases: ["prd", "propose"] },
-  { canonical: "flow-techspec", legacy: "cmd-create-techspec", aliases: ["techspec", "design"] },
-  { canonical: "flow-tasks", legacy: "cmd-create-tasks", aliases: ["tasks", "breakdown"] },
-  { canonical: "flow-validate-tasks", legacy: "cmd-validate-tasks", aliases: [] },
-  { canonical: "flow-run-task", legacy: "cmd-execute-task", aliases: [] },
-  { canonical: "flow-run", legacy: "cmd-execute-prd", aliases: ["run"] },
-  { canonical: "flow-review", legacy: "cmd-review-round", aliases: ["review"] },
-  { canonical: "flow-fix-review", legacy: "cmd-fix-reviews", aliases: ["fix-review"] },
-  { canonical: "flow-verify", legacy: "cmd-final-verify", aliases: ["verify"] },
-  { canonical: "flow-validation-plan", legacy: "cmd-create-validation-plan", aliases: [] },
-  { canonical: "flow-memory", legacy: "cmd-workflow-memory", aliases: [] }
+  { canonical: "flow-explore", aliases: ["explore"] },
+  { canonical: "flow-doc-workshop", aliases: ["docs"] },
+  { canonical: "flow-plan", aliases: ["plan"] },
+  { canonical: "flow-prd", aliases: ["prd", "propose"] },
+  { canonical: "flow-techspec", aliases: ["techspec", "design"] },
+  { canonical: "flow-tasks", aliases: ["tasks", "breakdown"] },
+  { canonical: "flow-validate-tasks", aliases: [] },
+  { canonical: "flow-run-task", aliases: [] },
+  { canonical: "flow-run", aliases: ["run"] },
+  { canonical: "flow-review", aliases: ["review"] },
+  { canonical: "flow-fix-review", aliases: ["fix-review"] },
+  { canonical: "flow-verify", aliases: ["verify"] },
+  { canonical: "flow-validation-plan", aliases: [] },
+  { canonical: "flow-memory", aliases: [] }
 ];
 
 export const PROFILE_PRESETS = {
   strict: {
     description: "Full governed workflow with planning, generic document drafting, execution, review, verification, validation, and memory.",
     skills: SKILLS.map((skill) => skill.canonical),
-    aliases: true,
-    compat: {
-      cmd_prefix: true
-    }
+    aliases: true
   },
   quick: {
     description: "Lean workflow with exploration, planning, execution, review, and verification.",
@@ -39,10 +36,7 @@ export const PROFILE_PRESETS = {
       "flow-fix-review",
       "flow-verify"
     ],
-    aliases: true,
-    compat: {
-      cmd_prefix: false
-    }
+    aliases: true
   },
   workspace: {
     description: "Planning-centric workspace profile focused on exploration, artifact design, generic docs, verification, and shared memory.",
@@ -57,10 +51,7 @@ export const PROFILE_PRESETS = {
       "flow-verify",
       "flow-memory"
     ],
-    aliases: true,
-    compat: {
-      cmd_prefix: false
-    }
+    aliases: true
   }
 };
 
@@ -77,9 +68,6 @@ export const DEFAULT_PROJECT_CONFIG = {
   delivery: "skills",
   aliases: PROFILE_PRESETS.strict.aliases,
   defaultLanguage: "pt-BR",
-  compat: {
-    cmd_prefix: PROFILE_PRESETS.strict.compat.cmd_prefix
-  },
   rules: {},
   context: ""
 };
@@ -101,9 +89,6 @@ export function getAllManagedNames() {
     names.add(skill.canonical);
     for (const alias of skill.aliases) {
       names.add(alias);
-    }
-    if (skill.legacy) {
-      names.add(skill.legacy);
     }
   }
 
