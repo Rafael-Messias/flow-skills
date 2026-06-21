@@ -9,7 +9,7 @@ argument-hint: "[nome-da-funcionalidade] [arquivo-prd]"
 Traduza requisitos de negócio em especificação técnica detalhada.
 
 <HARD-GATE>
-NÃO escreva a TechSpec até todas as fases estarem completas e o usuário aprovar o rascunho final.
+NÃO escreva a TechSpec até todas as etapas estarem completas e o usuário aprovar o rascunho final.
 NÃO pule exploração do código: toda TechSpec deve refletir a arquitetura existente.
 NÃO pule interação com o usuário.
 NÃO exija aprovação seção por seção: gere o rascunho completo e deixe o usuário revisar.
@@ -48,6 +48,7 @@ Use a ferramenta interativa de perguntas quando disponível. Se não existir, fa
 2. Faça perguntas técnicas.
    - Foque em COMO implementar, ONDE componentes vivem e QUAIS tecnologias usar.
    - Cubra arquitetura, fronteiras de componentes, dados, APIs, integração, testes e desempenho.
+   - So pergunte sobre rollout, ativacao gradual, migracoes ou compatibilidade entre versoes quando isso for relevante para a entrega.
    - Faça uma pergunta por mensagem.
    - Prefira múltipla escolha e inclua opção "Outro".
 
@@ -65,6 +66,7 @@ Use a ferramenta interativa de perguntas quando disponível. Se não existir, fa
    - Aplique YAGNI: não proponha pacotes, diretórios ou abstrações sem necessidade.
    - Mapeie todo objetivo e história do PRD para um componente técnico.
    - Referencie seções do PRD sem duplicar contexto de negócio.
+   - Se o PRD trouxer estrategia de entrega, traduza isso tecnicamente em ativacao, rollout, compatibilidade, migracao e rollback. Se nao trouxer, trate a entrega como release unico simples e registre isso apenas se agregar clareza.
    - Inclua exemplos de código só para interfaces centrais, no máximo 20 linhas cada.
    - A seção de Sequenciamento deve ter ordem numerada, com dependências explícitas após o primeiro passo.
    - Escreva todo conteúdo gerado no idioma explicitamente pedido pelo usuário.

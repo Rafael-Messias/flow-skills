@@ -40,14 +40,14 @@ Funcionalidades agrupadas por prioridade:
 - Requisitos funcionais
 - Interações entre funcionalidades
 
-## Experiência do Usuário
+## Experiência e Fluxos Impactados
 
-Jornada do primeiro contato ao uso recorrente:
+Jornada e fluxos criados, alterados ou afetados por esta entrega:
 
 - Personas e objetivos
 - Fluxos principais passo a passo
-- Considerações de UI/UX e acessibilidade
-- Onboarding e descoberta
+- Estados, bordas, feedbacks e acessibilidade
+- Descoberta da mudança, onboarding específico ou comunicação in-product, quando aplicável
 
 ## Restrições Técnicas de Alto Nível
 
@@ -68,22 +68,14 @@ Limites explícitos:
 - Problemas adjacentes não tratados
 - Fronteiras deste esforço
 
-## Plano de Lançamento em Fases
+## Estratégia de Entrega (Opcional)
 
-### MVP (Fase 1)
+Use esta seção apenas quando a entrega exigir ativação controlada, rollout gradual, migração ou dependências operacionais relevantes.
 
-- Funcionalidades incluídas
-- Critérios para avançar à Fase 2
-
-### Fase 2
-
-- Funcionalidades adicionais
-- Critérios para avançar à Fase 3
-
-### Fase 3
-
-- Escopo completo
-- Critérios de sucesso de longo prazo
+- Tipo de entrega: release único, feature flag, dark launch, rollout gradual, migração ou combinação
+- Pré-condições para ativação
+- Critérios para ampliar, liberar para todos ou encerrar rollout
+- Backout ou fallback de produto, quando aplicável
 
 ## Métricas de Sucesso
 

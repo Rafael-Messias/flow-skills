@@ -66,6 +66,15 @@ Sistemas externos e fronteiras:
 | ------------ | ---------------------------- | ----------------- | --------------- |
 | [componente] | [novo/modificado/depreciado] | [mudança e risco] | [ação]          |
 
+## Estratégia de Entrega e Ativação (Opcional)
+
+Use esta seção quando a implementação exigir cuidado operacional além de um deploy simples.
+
+- Modo de ativação: release único, feature flag, dark launch, rollout gradual ou migração
+- Compatibilidade retroativa e convivência entre versões
+- Migrações, backfills ou ordem operacional de ativação
+- Kill switch, rollback e critérios de reversão
+
 ## Abordagem de Testes
 
 ### Testes Unitários

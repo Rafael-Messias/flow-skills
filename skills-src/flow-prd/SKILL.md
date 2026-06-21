@@ -9,8 +9,8 @@ argument-hint: "[nome-ou-ideia-da-funcionalidade] [arquivo-de-ideia]"
 Crie um PRD focado em negócio por meio de brainstorming estruturado.
 
 <HARD-GATE>
-NÃO escreva o arquivo do PRD até que todas as fases estejam completas e o usuário aprove o rascunho final.
-NÃO pule a fase de pesquisa: todo PRD deve ser enriquecido com contexto do código e do mercado.
+NÃO escreva o arquivo do PRD até que todas as etapas estejam completas e o usuário aprove o rascunho final.
+NÃO pule a etapa de pesquisa: todo PRD deve ser enriquecido com contexto do código e do mercado.
 NÃO pule interações com o usuário: o usuário deve participar dos pontos de decisão.
 NÃO exija aprovação seção por seção: gere o rascunho completo e deixe o usuário revisar.
 Isto vale para todo PRD, mesmo quando a demanda parecer simples.
@@ -29,7 +29,7 @@ Quando esta skill mandar perguntar algo ao usuário, use a ferramenta interativa
 
 ## Checklist
 
-Crie uma tarefa para cada fase e conclua em ordem:
+Crie uma tarefa para cada etapa e conclua em ordem:
 
 1. **Determinar projeto e diretório**: derivar o slug, criar `tasks/<slug>/` e `adrs/`.
 2. **Descobrir contexto**: explorar código e pesquisar mercado em paralelo.
@@ -72,8 +72,9 @@ Crie uma tarefa para cada fase e conclua em ordem:
    - Crie ADR adicional para decisões relevantes de escopo feitas no processo.
    - Leia `references/prd-template.md` e preencha todas as seções.
    - Inclua "Registros de Decisão de Arquitetura" com links para ADRs em `adrs/`.
-   - Aplique YAGNI: remova tudo que o MVP não precisa.
+   - Aplique YAGNI: remova tudo que nao pertence ao menor recorte viavel desta entrega.
    - O PRD deve descrever capacidades do usuário e resultados de negócio.
+   - So descreva rollout, fases de liberacao ou estrategia incremental quando isso realmente fizer parte da entrega.
    - Não inclua bancos, APIs, estrutura de código, frameworks, estratégia de testes ou decisões arquiteturais.
    - Escreva todo o conteúdo gerado no idioma explicitamente pedido pelo usuário.
    - Se o usuário não pedir idioma, siga o idioma padrão do projeto indicado no `Flow Package Overlay`.

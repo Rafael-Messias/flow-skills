@@ -2,7 +2,7 @@
 
 Protocolo estruturado para criação de PRD. Conduza a conversa da ideia ao documento.
 
-## Fases
+## Etapas
 
 ### 1. Descoberta
 
@@ -25,14 +25,14 @@ Aprofunde requisitos e restrições:
 Apresente abordagens:
 - Ofereça 2 a 3 opções com trade-offs.
 - Comece pela recomendada e explique.
-- Diferencie escopo, fases ou estratégia.
+- Diferencie escopo, estratégia de entrega, necessidade de rollout ou release único.
 - Aguarde a escolha do usuário.
 
 ### 4. Refinamento
 
 Refine a abordagem escolhida:
 - Confirme limites de escopo.
-- Confirme fases e prioridades.
+- Confirme prioridades e se existe necessidade real de entrega incremental, rollout ou ativação controlada.
 - Valide métricas de sucesso.
 - Resolva perguntas em aberto.
 
